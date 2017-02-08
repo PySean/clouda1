@@ -9,6 +9,7 @@
 import re
 import sys
 import subprocess
+from subprocess import STDOUT
 
 """
     Set up arguments for parsing...
@@ -29,5 +30,28 @@ if __name__ == '__main__':
     if schedType is None or (schedType != 'byslot' and schedType != 'bynode'):
         sys.stderr.write(usage)
         sys.exit(1)
-
+    #The command that will be formatted based on the command line arguments,
+    #then executed...the double brackets are a trick to reuse this template,
+    #essentially.
+    mpiCmd = 'mpirun -np {{byslotOrBynode}} {{procs}} --hostfile {{host}} {tachyonOrHpcc}'
+    #Each host file we're using begins with a number and ends with the word
+    #"hosts".
+    hostTemplate = '{}hosts'
     ####Tachyon component
+    if benchType == 'tachyon':
+        template = mpiCmd.format(tachyonOrHpcc='./tachyon teapot.dat')
+        #Execute this for 1 - 4 vms...
+        for vms in range(1, 5):
+            #2 slots per VM
+            procs = vms * 2
+            host = hostTemplate.format(vms)
+            theCmd = template.format(schedType, procs, host)
+            #Now run the command and grep for the bit that talks about
+            #the number of seconds it took to run the command.
+            try:
+                output = str(subprocess.check_output(theCmd.split(), stderr=STDOUT),
+                             encoding='UTF-8')
+                #Debug print
+                print(output)
+            except subprocess.CalledProcessError as cpe:
+                sys.stderr.write("Uh oh: " + str(cpe))
