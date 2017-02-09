@@ -33,7 +33,7 @@ if __name__ == '__main__':
     #The command that will be formatted based on the command line arguments,
     #then executed...the double brackets are a trick to reuse this template,
     #essentially.
-    mpiCmd = 'mpirun -np {{byslotOrBynode}} {{procs}} --hostfile {{host}} {tachyonOrHpcc}'
+    mpiCmd = 'mpirun -np {{procs}} --{{byslotOrBynode}} --hostfile {{host}} {tachyonOrHpcc}'
     #Each host file we're using begins with a number and ends with the word
     #"hosts".
     hostTemplate = '{}hosts'
