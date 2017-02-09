@@ -39,6 +39,11 @@ if __name__ == '__main__':
     hostTemplate = '{}hosts'
     ####Tachyon component
     if benchType == 'tachyon':
+        #Used for grabbing the elapsed time in seconds from the ray tracer
+        #output.
+        timeReg = re.compile('Ray.*(\d*\.\d*)')
+        #Stores (vms, time) information as tuples
+        results = []
         template = mpiCmd.format(tachyonOrHpcc='./tachyon teapot.dat')
         #Execute this for 1 - 4 vms...
         for vms in range(1, 5):
@@ -53,5 +58,8 @@ if __name__ == '__main__':
                              encoding='UTF-8')
                 #Debug print
                 print(output)
+                rayTime = timeReg.search(output).group(1)
+                results.append( (vms, rayTime))
             except subprocess.CalledProcessError as cpe:
                 sys.stderr.write("Uh oh: " + str(cpe))
+        print(results)
