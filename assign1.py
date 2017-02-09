@@ -41,7 +41,7 @@ if __name__ == '__main__':
     if benchType == 'tachyon':
         #Used for grabbing the elapsed time in seconds from the ray tracer
         #output.
-        timeReg = re.compile('Ray.*(\d*\.\d*)')
+        timeReg = re.compile('Ray Tracing Time:\s*(\d*\.\d*)')
         #Stores (vms, time) information as tuples
         results = []
         template = mpiCmd.format(tachyonOrHpcc='./tachyon teapot.dat')
