@@ -45,7 +45,7 @@ if __name__ == '__main__':
             #2 slots per VM
             procs = vms * 2
             host = hostTemplate.format(vms)
-            theCmd = template.format(schedType, procs, host)
+            theCmd = template.format(byslotOrBynode=schedType, procs=procs, host=host)
             #Now run the command and grep for the bit that talks about
             #the number of seconds it took to run the command.
             try:
