@@ -6,11 +6,15 @@
     This is all going to be done in the same directory.
 """
 
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
 import re
 import sys
 import subprocess
 from subprocess import STDOUT
 #testFromLee
+#testFromSean(amazing=True, ego='YES')
 """
     Set up arguments for parsing...
 """
@@ -63,3 +67,18 @@ if __name__ == '__main__':
             except subprocess.CalledProcessError as cpe:
                 sys.stderr.write("Uh oh: " + str(cpe))
         print(results)
+        #Now plot the results as a line...will end up a graph of bynode or byslot, depending
+        #on cmd line option. Unfortunately that means we will have two different graphs
+        #to compare instead of having both lines on one graph.
+        #Must unpack the results list tuples.
+        redline,_ = plt.plot(list(map(lambda x: x[0], results)), 
+                             list(map(lambda x: x[1], results)))
+        #1-4 vms on the x axis, 0 to 2 seconds on the y...(it's fast, at least for
+        #byslot scheduling.)
+        plt.axis([1,4, 0, 2])
+        plt.xlabel('Nodes')
+        #It's in seconds by default, might convert to ms somewhere down the line.
+        plt.ylabel('Runtime (s)')
+        plt.title('Tachyon Results: {}'.format(schedType))
+        #plt.legend()
+        plt.savefig('tachyonresults.pdf')
