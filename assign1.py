@@ -82,3 +82,67 @@ if __name__ == '__main__':
         plt.title('Tachyon Results: {}'.format(schedType))
         #plt.legend()
         plt.savefig('tachyonresults.pdf')
+    ###HPCC component
+    elif benchType == 'hpcc':
+        #Unfortunately, we have to read in the hpccinf file, modify then spit
+        #it out repeatedly because of how the hpcc benchmark works.
+        #We also have to read in the output file, delete it, then read it in again
+        #after the next program execution...
+
+        #For the hpl benchmark
+        hplReg = re.compile('WR11C2R4.*(\d+.\d+e\+|\-\d+)')
+        #For the ptrans benchmark
+        ptransReg = re.compile('WALL.*(\d+\.\d+).*')
+        template = mpiCmd.format(tachyonOrHpcc='./hpcc')
+        hpccinfTemplate = ''
+        #Read in the hpccinf file, turn the Q part into a format string for
+        #easy replacement.
+        with open('hpccinf.txt', 'r') as infile:
+            for line in infile:
+                #Here's the line we were looking for! Replace the number with brackets.
+                if line.endswith('Qs')
+                    #Strings in python are immutable, which is really dumb but oh well.
+                    listLine = list(line)
+                    listLine[0:2] = '{}'
+                    hpccinfTemplate += ''.join(listLine)
+                else:
+                    hpccinfTemplate += line
+        #These will both store tuples of the form (vm,time) for both benchmarks.
+        hplResults = []
+        ptransResults = []
+        for vms in range(1, 5):
+            #Just going to set the "Q" value in the input file to whatever np is.
+            procs = Q = vms * 2
+            host = hostTemplate.format(vms)
+            theCmd = template.format(byslotOrBynode=schedType, procs=procs, host=host)
+            curHpc = hpccinfTemplate.format(Q)
+
+            try:
+                #Spit out the appropriate output file with according Q value.
+                with open('hpccinf.txt', 'w') as outfile:
+                    outfile.write(curHpc)
+                subprocess.check_output(theCmd.split(), stderr=STDOUT))
+                #Iterate through output file, gather relevant info.
+                with open('hpccout.txt', 'r') as resfile:
+                    #Need these to average the WALL values for the PTRANS benchmark.
+                    wallCounter = 0
+                    ptransTotal = 0
+                    for line in resfile:
+                        hplMatch = hplReg.search(line)
+                        ptransMatch = ptransReg.search(line)
+                        #If we hit the line with the gflops result...
+                        if hplMatch is not None:
+                            hplFlops = float(hplMatch.group(1))
+                            #This is safe to do, as it only happens once in the entire file.
+                            hplResults.append( (vms, hplFlops) )
+                        #If we hit a WALL line, accumulate the time, inc the counter.
+                        elif ptransMatch is not None:
+                            ptransTotal += float(ptransMath.group(1))
+                            wallCounter += 1
+                    ptransAvg = ptransTotal / wallCounter
+                    ptransResults.append((vms,  ptransAvg))
+            except subprocess.CalledProcessError as cpe:
+                sys.stderr.write('Uh oh: ' + str(cpe))
+            #Ensure we did everything correctly...
+            print("HPL data: {}".format(str(hplResults)))
+            print("PTRANS data: {}".format(str(ptransResults)))
