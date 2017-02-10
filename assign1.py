@@ -71,11 +71,11 @@ if __name__ == '__main__':
         #on cmd line option. Unfortunately that means we will have two different graphs
         #to compare instead of having both lines on one graph.
         #Must unpack the results list tuples.
-        redline,_ = plt.plot(list(map(lambda x: x[0], results)), 
-                             list(map(lambda x: x[1], results)))
+        redline, = plt.plot(list(map(lambda x: x[0], results)), 
+                             list(map(lambda x: x[1], results)), 'ro')
         #1-4 vms on the x axis, 0 to 2 seconds on the y...(it's fast, at least for
         #byslot scheduling.)
-        plt.axis([1,4, 0, 2])
+        plt.axis([0,5, 0, 2])
         plt.xlabel('Nodes')
         #It's in seconds by default, might convert to ms somewhere down the line.
         plt.ylabel('Runtime (s)')
