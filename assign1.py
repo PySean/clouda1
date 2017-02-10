@@ -9,6 +9,7 @@
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
+import os
 import re
 import sys
 import subprocess
@@ -116,14 +117,16 @@ if __name__ == '__main__':
             host = hostTemplate.format(vms)
             theCmd = template.format(byslotOrBynode=schedType, procs=procs, host=host)
             curHpc = hpccinfTemplate.format(Q)
-
+            #Remove the current output file before each iteration if it exists.
+            if os.path.exists('hpccoutf.txt'):
+                os.unlink('hpccoutf.txt')
             try:
-                #Spit out the appropriate output file with according Q value.
-                with open('hpccinf.txt', 'w') as outfile:
-                    outfile.write(curHpc)
+                #Spit out the appropriate input file with according Q value.
+                with open('hpccinf.txt', 'w') as infile:
+                    infile.write(curHpc)
                 subprocess.check_output(theCmd.split(), stderr=STDOUT))
                 #Iterate through output file, gather relevant info.
-                with open('hpccout.txt', 'r') as resfile:
+                with open('hpccoutf.txt', 'r') as resfile:
                     #Need these to average the WALL values for the PTRANS benchmark.
                     wallCounter = 0
                     ptransTotal = 0
