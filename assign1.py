@@ -72,7 +72,7 @@ if __name__ == '__main__':
         #on cmd line option. Unfortunately that means we will have two different graphs
         #to compare instead of having both lines on one graph.
         #Must unpack the results list tuples.
-        redline, = plt.plot(list(map(lambda x: x[0], results)), 
+        reddots, = plt.plot(list(map(lambda x: x[0], results)), 
                              list(map(lambda x: x[1], results)), 'ro')
         #1-4 vms on the x axis, 0 to 2 seconds on the y...(it's fast, at least for
         #byslot scheduling.)
@@ -91,9 +91,11 @@ if __name__ == '__main__':
         #after the next program execution...
 
         #For the hpl benchmark
-        hplReg = re.compile('WR11C2R4.*(\d+.\d+e\+|\-\d+)')
-        #For the ptrans benchmark
-        ptransReg = re.compile('WALL.*(\d+\.\d+).*')
+        hplReg = re.compile('WR11C2R4.*(\d+\.\d+e(\+|-)\d+)')
+        #For the ptrans benchmark: Introducing the most beautiful regex of all time.
+        #ptransReg = re.compile('WALL.*(\d+\.\d+).*')
+        ptransReg = re.compile(('WALL\s*\S*\s*\S*\s*\S*\s*\S*\s*\S*'
+                                '\s*\S*\s*\S*\s*\S*\s*(\d+\.\d+)'))
         template = mpiCmd.format(tachyonOrHpcc='./hpcc')
         hpccinfTemplate = ''
         #Read in the hpccinf file, turn the Q part into a format string for
@@ -101,7 +103,7 @@ if __name__ == '__main__':
         with open('hpccinf.txt', 'r') as infile:
             for line in infile:
                 #Here's the line we were looking for! Replace the number with brackets.
-                if line.endswith('Qs')
+                if line.endswith('Qs'):
                     #Strings in python are immutable, which is really dumb but oh well.
                     listLine = list(line)
                     listLine[0:2] = '{}'
@@ -124,7 +126,7 @@ if __name__ == '__main__':
                 #Spit out the appropriate input file with according Q value.
                 with open('hpccinf.txt', 'w') as infile:
                     infile.write(curHpc)
-                subprocess.check_output(theCmd.split(), stderr=STDOUT))
+                subprocess.check_output(theCmd.split(), stderr=STDOUT)
                 #Iterate through output file, gather relevant info.
                 with open('hpccoutf.txt', 'r') as resfile:
                     #Need these to average the WALL values for the PTRANS benchmark.
@@ -140,7 +142,7 @@ if __name__ == '__main__':
                             hplResults.append( (vms, hplFlops) )
                         #If we hit a WALL line, accumulate the time, inc the counter.
                         elif ptransMatch is not None:
-                            ptransTotal += float(ptransMath.group(1))
+                            ptransTotal += float(ptransMatch.group(1))
                             wallCounter += 1
                     ptransAvg = ptransTotal / wallCounter
                     ptransResults.append((vms,  ptransAvg))
@@ -149,3 +151,26 @@ if __name__ == '__main__':
             #Ensure we did everything correctly...
             print("HPL data: {}".format(str(hplResults)))
             print("PTRANS data: {}".format(str(ptransResults)))
+            #Now plot a graph for HPL and PTRANS, respectively.
+            hplDots, = plt.plot(list(map(lambda x: x[0], hplResults)), 
+                                 list(map(lambda x: x[1], hplResults)), 'ro')
+            #0-5 vms on the x axis, 0 to 3 gflops on the y.
+            plt.axis([0,5, 0, 3])
+            plt.xlabel('Nodes')
+            #It's in seconds by default, might convert to ms somewhere down the line.
+            plt.ylabel('Gflops')
+            plt.title('HPL Results: {}'.format(schedType))
+            #plt.legend()
+            plt.savefig('hpl{}.pdf'.format(schedType))
+            #Clear the figure on the next plot command.
+            plt.hold(False)
+            ptransDots, = plt.plot(list(map(lambda x: x[0], ptransResults)), 
+                                 list(map(lambda x: x[1], ptransResults)), 'ro')
+            #0-5 vms on the x axis, 0 to 1 GB/s on the y.
+            plt.axis([0,5, 0, 1])
+            plt.xlabel('Nodes')
+            #It's in seconds by default, might convert to ms somewhere down the line.
+            plt.ylabel('GB/s')
+            plt.title('PTRANS Results: {}'.format(schedType))
+            #plt.legend()
+            plt.savefig('ptrans{}.pdf'.format(schedType))
