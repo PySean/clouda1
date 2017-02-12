@@ -107,8 +107,6 @@ if __name__ == '__main__':
                     #Strings in python are immutable, which is really dumb but oh well.
                     listLine = list(line)
                     listLine[0:2] = '{}'
-                    #print('hello world')
-                    #print(''.join(listLine))
                     hpccinfTemplate += ''.join(listLine)
                 else:
                     hpccinfTemplate += line
@@ -158,8 +156,8 @@ if __name__ == '__main__':
             #Now plot a graph for HPL and PTRANS, respectively.
             hplDots, = plt.plot(list(map(lambda x: x[0], hplResults)), 
                                  list(map(lambda x: x[1], hplResults)), 'ro')
-            #0-5 vms on the x axis, 0 to 3 gflops on the y.
-            plt.axis([0,5, 0, 3])
+            #0-5 vms on the x axis, 0 to 7 gflops on the y.
+            plt.axis([0,5, 0, 7])
             plt.xlabel('Nodes')
             #It's in seconds by default, might convert to ms somewhere down the line.
             plt.ylabel('Gflops')
@@ -170,8 +168,8 @@ if __name__ == '__main__':
             plt.hold(False)
             ptransDots, = plt.plot(list(map(lambda x: x[0], ptransResults)), 
                                  list(map(lambda x: x[1], ptransResults)), 'ro')
-            #0-5 vms on the x axis, 0 to 1 GB/s on the y.
-            plt.axis([0,5, 0, 1])
+            #0-5 vms on the x axis, 0 to 1.5 GB/s on the y.
+            plt.axis([0,5, 0, 1.5])
             plt.xlabel('Nodes')
             #It's in seconds by default, might convert to ms somewhere down the line.
             plt.ylabel('GB/s')
