@@ -103,10 +103,12 @@ if __name__ == '__main__':
         with open('hpccinf.txt', 'r') as infile:
             for line in infile:
                 #Here's the line we were looking for! Replace the number with brackets.
-                if line.endswith('Qs'):
+                if line.endswith('Qs\n'):
                     #Strings in python are immutable, which is really dumb but oh well.
                     listLine = list(line)
                     listLine[0:2] = '{}'
+                    #print('hello world')
+                    #print(''.join(listLine))
                     hpccinfTemplate += ''.join(listLine)
                 else:
                     hpccinfTemplate += line
@@ -115,7 +117,9 @@ if __name__ == '__main__':
         ptransResults = []
         for vms in range(1, 5):
             #Just going to set the "Q" value in the input file to whatever np is.
-            procs = Q = vms * 2
+            procs = vms * 2
+            Q=vms
+            #print("Q="+str(Q))
             host = hostTemplate.format(vms)
             theCmd = template.format(byslotOrBynode=schedType, procs=procs, host=host)
             curHpc = hpccinfTemplate.format(Q)
