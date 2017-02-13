@@ -1,0 +1,24 @@
+﻿CS5463: Cloud and Big Data
+
+
+Homework 1
+
+
+Group 9: Lee Boyd, Sean Soderman, Corey Crosser
+
+
+Q1) The results show that by slot and by node scheduling are relatively equivalent and the benchmark results improve logarithmically as machines are added to the cluster. This makes sense because the VMs only have one core, making by slot and by node scheduling roughly equivalent.  The sub-linear performance improvement also makes sense because more communication overhead is added with each node, stifling performance gains. This experiment would be more interesting if each node had multiple cores to highlight the difference in these two MPI scheduling policies. See pages 2 and 3 for the first two graphs which illustrate the performance Ray Trace benchmark.
+
+
+Q2) Our results show an exponential decrease in performance for the PTRANS benchmark as nodes are added. This is counterintuitive to the idea that more nodes should bring more processing power and improve benchmark performance. This result is probably due to our lack of understanding of the HPCC benchmark. We likely did not tune the parameters properly and the provided website was little help. We attempted to tune these numbers manually and the best values we could find for P, Q, N and NB are listed in the table on page 4. These parameters were difficult to determine due to inconsistent results between runs (different performance numbers with same input parameters) and conflicting results between the two HPCC benchmarks (parameters that improve the performance of HPL hurt the performance of PTRANS). The HPL benchmark shows a general improvement as nodes are added to the cluster. As to which MPI scheduling policy is better, that is unclear from our results. See graphs on pages 5-8 for HPCC results.
+
+
+Q3) Our script works as expected and changes the value of Q to be equal to the number of nodes in the cluster and we chose P=1 for all runs of HPCC. Although we think we may have found some good possible values for N relating to each cluster size, our script does not tune this parameter. We were unable to see any correlation to the NB parameter and HPCC performance. We chose NB=96 for all cluster sizes.
+
+
+Division of Labor:
+* Cluster Setup: All of us
+* MPI Setup: Lee and Sean
+* Tuning HPCC Parameters: Corey and Lee
+* Python Script: Sean
+* Report: Corey
