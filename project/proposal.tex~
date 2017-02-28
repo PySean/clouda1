@@ -1,0 +1,38 @@
+\documentclass[14pt]{extarticle}
+\usepackage{times}
+
+\begin{document}
+\title{Project Proposal}
+\author{Lee Boyd,\n
+        Corey Crosser,\n
+        Sean Soderman}
+\date{\today}
+\maketitle
+
+\section{Background}
+Much effort has been put into optimising MapReduce, as big data takes a great deal of computation to
+process for a variety of tasks.
+%something about how today's companies mine a crapload of data from the web and then work on it.
+%reason mapreduce was created? could talk about this as a testament to...(the importance of the project?)
+
+\section{Problem}
+By locally compressing the output of the mapper, the combiner minimizes network traffic in the shuffle phase. 
+%Because the combiner operates on local data to a node
+%In hadoop we know theat the nodes will also be reducer nodes. 
+%The combiner is more efficient than the reducer 
+
+We surmise that intelligent hdfs placement maximizes the amount of data compressed during the combine phase,
+thus minimizing network overhead.% optimizes%
+
+currently, web crawling agents 
+that create MapReduce input
+have no intelligent hdfs placement which 
+creates a lot of overhead in the shuffle
+phase.
+
+%%%%%
+
+
+We want to place data into hdfs by predicting 
+its likely partition in the reduction
+phase.

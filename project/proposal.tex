@@ -1,0 +1,38 @@
+\documentclass[14pt]{extarticle}
+\usepackage{times}
+
+\begin{document}
+\title{Project Proposal}
+\author{Lee Boyd,\n
+        Corey Crosser,\n
+        Sean Soderman}
+\date{\today}
+\maketitle
+
+\section{Background}
+Big data is comprised of three V's, volume, velocity and variety. As more and more information is collected each day, the demand for optimized, elastic scaled, and generalized processing platforms has continued to grow. This is why Mapreduce style platforms continue to be a high demand research area, with coporate monetary interests, scientific breakthroughs, and innovative technologies closely aligned with their efficiency.
+
+%something about how today's companies mine a crapload of data from the web and then work on it.
+%reason mapreduce was created? could talk about this as a testament to...(the importance of the project?)
+
+\section{Problem}
+By locally compressing the output of the mapper, the combiner minimizes network traffic in the shuffle phase. 
+%Because the combiner operates on local data to a node
+%In hadoop we know theat the nodes will also be reducer nodes. 
+%The combiner is more efficient than the reducer 
+
+We surmise that intelligent hdfs placement maximizes the amount of data compressed during the combine phase,
+thus minimizing network overhead.% optimizes%
+
+currently, web crawling agents 
+that create MapReduce input
+have no intelligent hdfs placement which 
+creates a lot of overhead in the shuffle
+phase.
+
+%%%%%
+
+
+We want to place data into hdfs by predicting 
+its likely partition in the reduction
+phase.
