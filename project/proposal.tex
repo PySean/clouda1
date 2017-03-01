@@ -10,22 +10,17 @@
 \maketitle
 
 \section{Background}
-Big data is comprised of three V's, volume, velocity and variety. As more and more information is collected each day, the demand for optimized, elastic scaled, and generalized processing platforms has continued to grow. This is why Mapreduce style platforms continue to be a high demand research area, with coporate monetary interests, scientific breakthroughs, and innovative technologies closely aligned with their efficiency.
+Big data is comprised of three V's, volume, velocity and variety. As more and more information is collected each day, the demand for optimized, elastic scaled, and generalized processing platforms has continued to grow. This is why Mapreduce style platforms continue to be a high demand research area, with coporate monetary interests, scientific breakthroughs, and innovative technologies closely aligned with their efficiency.  Some such optimizations include work on using intelligent partitioning for the shuffle phase, through clustering and other machine learning techniques to try to prevent data skew as well as choosing an optimal post-shuffle (reduce) partition for pre-shuffle (map) node.  
 
 %something about how today's companies mine a crapload of data from the web and then work on it.
 %reason mapreduce was created? could talk about this as a testament to...(the importance of the project?)
 
 \section{Problem}
-By locally compressing the output of the mapper, the combiner minimizes network traffic in the shuffle phase. 
-%Because the combiner operates on local data to a node
-%In hadoop we know theat the nodes will also be reducer nodes. 
-%The combiner is more efficient than the reducer 
+Mapreduce and its sibling, Hadoop, optimize big data processing by trying to use the closest processors to the data blocks in the distributed file system.  Although 'taking the processing to the data' is a mantra commonly heard in big data processing, one commonly overlooked fact is that IaaS providers tend to keep their cloud storage and cloud processing nodes in different clusters.  This means that before the processing is taken to the data in a distributed cluster, the data must first be moved from cloud storage, often the entire cluster manifesting through the scaling up virtual machines in the cloud processing racks.  The process of moving data from cloud storage to the map-reduce cluster is an opportunity for more intelligent placement of local data by maximizing data similarity based on the lamda functions of the job to be performed.  Using a combiner with highly homogenous local data compresses the output of the mapper and network traffic in the shuffle phase.  The problem then is to show that given a sufficiently large job, we can determine and place data in hdfs, such that the loss of time from the placement is outweighed by the reduction in network overhead from enhanced data locality, providing job speedup.
 
-We surmise that intelligent hdfs placement maximizes the amount of data compressed during the combine phase,
-thus minimizing network overhead.% optimizes%
 
 currently, web crawling agents 
-that create MapReduce input
+that create MapReduce inputu
 have no intelligent hdfs placement which 
 creates a lot of overhead in the shuffle
 phase.

@@ -10,8 +10,8 @@
 \maketitle
 
 \section{Background}
-Much effort has been put into optimising MapReduce, as big data takes a great deal of computation to
-process for a variety of tasks.
+Big data is comprised of three V's, volume, velocity and variety. As more and more information is collected each day, the demand for optimized, elastic scaled, and generalized processing platforms has continued to grow. This is why Mapreduce style platforms continue to be a high demand research area, with coporate monetary interests, scientific breakthroughs, and innovative technologies closely aligned with their efficiency.
+
 %something about how today's companies mine a crapload of data from the web and then work on it.
 %reason mapreduce was created? could talk about this as a testament to...(the importance of the project?)
 
