@@ -15,11 +15,13 @@ Big data is comprised of three V's, volume, velocity and variety. As more and mo
 
 
 \section{Problem}
-Mapreduce and its sibling, Hadoop, optimize big data processing by trying to use the closest processors to the data blocks in the distributed file system.  Although ``taking the processing to the data'' is a mantra commonly heard in big data processing, one commonly overlooked fact is that IaaS providers tend to keep their cloud storage and cloud processing nodes in different clusters.  
-%This paragraph's first sentence is really confusing.
+Mapreduce and its sibling, Hadoop, optimize big data processing by trying to use the closest processors to the data blocks in the distributed file system.  Although ``taking the processing to the data'' is a mantra commonly heard in big data processing, IaaS providers tend to keep their cloud storage and cloud processing nodes in different clusters. This means before processing is taken to the data, data is taken to the clusters.   
+%This paragraph's first sentence is really confusing.  *UPDATED TO CLARIFY*
 This means that before the processing is taken to the data in a distributed cluster, the data must first be moved from cloud storage, often the entire cluster manifesting through the scaling up virtual machines in the cloud processing racks.  The process of moving data from cloud storage to the map-reduce cluster is an opportunity for more intelligent placement of local data by maximizing data similarity based on the lambda functions of the job to be performed.  Using a combiner with highly homogeneous local data compresses the output of the mapper and network traffic in the shuffle phase.  The problem then is to show that given a sufficiently large job, we can determine and place data in hdfs such that the loss of time from the placement is outweighed by the reduction in network overhead from enhanced data 
 %Locality? What? I thought we were optimizing the placement of the clusters so that
 %the mapper outputs were more suitable for combining.
+
+%*JUST TO BE CLEAR, COMBINING HAPPENS INSIDE OF THE MAPPER, THUS REDUCING MAPPER OUTPUT.  DATA LOCALITY IS ENHANCED IF THE DATA IN MAPPERS IS MORE SIMILAR, THUS ALLOWING THE COMBINER (WHICH HAPPENS LOCALLY) TO DO MORE WORK IN THE MAP RATHER MORE MAPPERS PASSING IT AROUND IN THE SHUFFLE PHASE.  EXAMPLE: IF TRUMP IS IN 5 MAPPERS, BUT ONLY ONE REDUCER TAKES TRUMP, THEN WE HAVE TO PASS [TRUMP, 1] FOUR OR FIVE TIMES.  IF ONE MAPPER HAS ALL THE TRUMPS, THEN IT HAS TO PASS AT MOST [TRUMP, 5], WHICH ONLY COSTS O(1) AT WORST OR NOT PASS AT ALL IF IT IS THE REDUCER HANDLING TRUMPS.
 locality, providing job speedup.
 
 \section{Method}
@@ -27,17 +29,20 @@ We assume that we are performing big data processing in the cloud.  As such, the
 
 %You don't use K until two paragraphs later. This isn't the biggest deal, but
 %I, for example, had to scroll up and refresh myself on what K was.
+%THIS IS VERY NORMAL.  wE MAKE DEFINITIONS EARLY IN THE METHODOLOGY, THEN PEOPLE CAN REFERENCE THEM LATER.  JUST LIKE IN PROGRAMMING, YOU DEFINE YOUR VARIABLES EARLY.
+
 We assume that we have K slave-nodes and we are working to run a kernel in Spark that counts the number of words in a large text corpus.  We choose this task because word counts are frequently required for term-frequency indexing, a tool that is quite useful for almost anyone dealing with large unstructured data.  Our example will use stories from CNN.com.  We will talk about clustering using the already human-defined genres of articles such as politics, sports, entertainment, etc, but do understand that these distinctions will not always be drawn with the same lines by the AI agent. 
 
 Assume that each node requires a minimum size B block of data to compensate for its overhead.  Initially, we move only K*B from the storage side of the cloud to our cluster.  If possible, files should be taken from random locations on the storage side in order to obtain a random sample, and place these files in K blocks of HDFS, just as we normally would to reduce K*B worth of data.  
 
-%Adding the location of each output key WHERE? On disk? You say that right afterwards, so it can't be on disk.
-Before combining, we augment the lambda function by adding the location of each output key with the location on disk of its elements.  In our example, the key would just be a single word, but in other cases it may be a combination of words.  Various weighting schemes could be chosen for combinations, but this is not our focus in this project.  Before combining, we make another transformation that adds a composite key and a value of one for each time a pair of keys are within a maximum distance D from each other on disk.  D is a hyperparameter that can be adjusted with experimentation.  Dropping the location augment from the original key value output, we will run the combiner, giving us a set of tuples and the number of times they occur within a range of D and our output data.  We devote a portion of the partitions in the action phase to calculate the partitions.   %Action phase? What??? Two kinds of partitions?
+%Adding the location of each output key WHERE? On disk? You say that right afterwards, so it can't be on disk. 
+%THE INFORMATION IN THE KEY COMES FROM SOMEWHERE.  WHERE ON DISK DOES IT COME FROM.  EVERY LOCATION ON DISK OR EVEN IN MEMORY HAS AN ADDRESS.  THIS ADDRESS CAN BE USED AS A DISTANCE MEASURE.
+Before combining, we augment the lambda function by adding the location of each output key with the location on disk (or in the RDD) of its elements.  In our example, the key would just be a single word, but in other cases it may be a combination of words.  Various weighting schemes could be chosen for combinations, but this is not our focus in this project.  Before combining, we make another transformation that adds a composite key and a value of one for each time a pair of keys are within a maximum distance D from each other on disk.  D is a hyperparameter that can be adjusted with experimentation.  Dropping the location augment from the original key value output, we will run the combiner, giving us a set of tuples and the number of times they occur within a range of D and our output data.  We devote a portion of the partitions in the action phase to calculate the partitions.   %Action phase? What??? Two kinds of partitions? *YES, IN SPARK MAP = TRANSFORM AND REDUCE = ACTION.  JUST A DIFFERENT TERMINOLOGY FOR ESSENTIALLY THE SAME THING.  SPARK IS JUST MORE GENERALIZED SO THEY USE A MORE GENERAL NOMENCLATURE*
 
 The problem of choosing future K clusters as a partition of the disk space in the next round is equivalent to a graph coloring problem, which is NP-hard.  We use vertices as keys from our original output, and weighted edges being the number of times key pairs are found close together.  Using the algorithm in [Clustering on k-edge-colored graphs, E. Angel1] we can efficiently estimate a clustering with K colors, trying to maximize the weights of edges within clusters.
 
 After the first round, we will create K files in HDFS, each one representing a color from the clustering. Each round, we will double the number of blocks as input, but we will still sample each block before deciding which of the K files to append it to in the cluster.  Each time we finish a round we will add this information to the 
-%RDD? We are using this already? I thought it was specific to initiation of Spark jobs..
+%RDD? We are using this already? I thought it was specific to initiation of Spark jobs..*MY INTENTION IS TO USE SPARK, ALTHOUGH IF WE WANT TO SIMPLIFY THE PROJECT AND NOT USE AN ITERATIVE PIPELINED TRAINING APPROACH, THEN WE CAN USE HADOOP INSTEAD.  GIVEN OUR CURRENT LEVEL OF UNDERSTANDING AS A GROUP, PERHAPS WE SHOULD STICK TO HADOOP AND JUST DOING A ONE TIME CLUSTERING APPROACH UP FRONT TO SIMPLIFY THINGS*
 RDD of the previous round.  We expect to double the size of input on each round, but will stop clustering data after so many rounds.  This is subject to experimentation.  
 
 
@@ -47,12 +52,12 @@ that create MapReduce inputu
 have no intelligent hdfs placement which 
 creates a lot of overhead in the shuffle
 phase.
-
+ACTUALLY THEY HAVE A GENERAL INTELLIGENT PLACEMENT, BUT IT ISN'T NECESSARILY SUPERVISED TO SUIT A SPECIFIC LAMBDA (MAPPER FUNCTION)  IF WE CUSTOMIZE THE INTELLIGENCE TO BETTER FIT OUR MAPPER WE WILL GET BETTER RESULTS THAN JUST GENERAL PLACEMENT THEORETICALLY.
 %%%%%
 
 
-We want to place data into hdfs by predicting 
+*AFTER DESIGNING PARTITIONS THAT REFLECT OUR MAPPERS, We want to place data into hdfs by predicting 
 its likely partition in the reduction
-phase.
+phase.  *REDUCTION PHASE ONLY IF HADOOP, ACTION PHASE IF SPARK*
 \end{comment}
 \end{document}
