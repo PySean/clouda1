@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python2
 import sys
 #note because we are finding the single most dangerous address
 #we can only use one reducer when we submit our jobdef reducer():
@@ -40,6 +40,3 @@ if addrCrimeCount > maxCrimeCount:
      longestCrimeList = addrCrimesList
 #reducer output. Answers question 4
 print(mostDangerousAddr + ": " + str(set(longestCrimeList)))
-#note that this may output the same crime multiple times
-#so we may want to store the crimes in a unique list instead
-#of a string
