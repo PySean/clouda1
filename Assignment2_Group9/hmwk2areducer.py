@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python
 import sys
 #note because we are finding the single most dangerous address
 #we can only use one reducer when we submit our jobdef reducer():
@@ -13,7 +13,7 @@ longestCrimeList = [] #list of crimes at worst place
 for line in sys.stdin:
      line=line.strip()
      words = line.split(",") #split mapper output
-     
+     #print(words)   #DEBUG
      addr = words[0]
      mytype = words[1] #type of crime commited
      if addr == currentAddr: #we're still at this addr
@@ -39,4 +39,5 @@ if addrCrimeCount > maxCrimeCount:
      mostDangerousAddr = currentAddr
      longestCrimeList = addrCrimesList
 #reducer output. Answers question 4
-print(mostDangerousAddr + ": " + str(set(longestCrimeList)))
+print(mostDangerousAddr + ": " + str(set(["UnknownCrime" if x == '' else x for x 
+                                                                 in longestCrimeList])))
