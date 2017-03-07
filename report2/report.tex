@@ -1,4 +1,6 @@
 \documentclass[14pt]{extarticle}
+\usepackage[margin=1in]{geometry}
+\usepackage{verbatim}
 \usepackage{times}
 \usepackage{graphicx}
 \usepackage{float}
@@ -13,6 +15,59 @@
 \maketitle
 
 %TODO: Need graphs in preferably pdf format
+\section{Performance graphs}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=5.2in]{consolescrnshot.png}
+\caption{}
+\end{figure}
+
+\begin{comment}
+\begin{figure}[H]
+\centering
+\includegraphics[width=5.2in]{}
+\caption{}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=5.2in]{}
+\caption{}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=5.2in]{}
+\caption{}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=5.2in]{}
+\caption{}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=5.2in]{}
+\caption{}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=5.2in]{}
+\caption{}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=5.2in]{}
+\caption{}
+\end{figure}
+\end{comment}
+
 
 \section{Work Division}
 Lee handled the server setup. Corey devised the mapping and reducing algorithms, and Lee
@@ -21,8 +76,9 @@ and also worked with Lee on finding optimisation parameters for both parts of th
 assignment. He also wrote Perl scripts to ease the formation of relevant MapReduce
 command lines.
 
-\section{Performance Explanation}
+\section{Performance Description}
 %TODO
-We did stuff and everything is really nice!
+Using the combiner in Part 2 reduced the the shuffle bytes from 32M to 88K, which
+would make a significant performance impact in a real network.
 
 \end{document}
