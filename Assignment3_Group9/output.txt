@@ -1,0 +1,1 @@
+Final centers: [array([26, 25]), array([3, 0]), array([0, 2]), array([ 74, 348]), array([100,  27])]
